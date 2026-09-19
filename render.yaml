@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: cat-tracker-api
+    name: catprep-ayd2
     env: node
     rootDir: server
     buildCommand: npm install
@@ -13,4 +13,4 @@ services:
       - key: JWT_SECRET
         sync: false
       - key: CLIENT_ORIGIN
-        sync: false
+        value: https://enchanting-stardust-faddd9.netlify.app
