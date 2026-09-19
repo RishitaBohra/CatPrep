@@ -13,7 +13,7 @@ const defaultOrigins = [
   'http://localhost:5173',
   'http://localhost:3000',
   'http://localhost:5050',
-  'https://enchanting-stardust-faddd9.netlify.app'
+  'https://catprep-tracker.netlify.app'
 ];
 
 const envOrigins = (process.env.CLIENT_ORIGIN || '')

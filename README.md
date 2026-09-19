@@ -7,7 +7,7 @@ A full-stack MERN application built for **CAT (Common Admission Test)** aspirant
 ## 🌐 Live Application Links
 
 - **Frontend Web Application (Netlify)**:  
-  👉 **[https://enchanting-stardust-faddd9.netlify.app](https://enchanting-stardust-faddd9.netlify.app)**
+  👉 **[https://catprep-tracker.netlify.app](https://catprep-tracker.netlify.app)**
 
 - **Backend REST API (Render)**:  
   👉 **[https://catprep-ayd2.onrender.com](https://catprep-ayd2.onrender.com)**
@@ -53,7 +53,7 @@ VITE_API_URL=https://catprep-ayd2.onrender.com/api
 PORT=5000
 MONGODB_URI=mongodb+srv://<username>:<password>@cluster0.xxxxx.mongodb.net/cat_tracker?retryWrites=true&w=majority
 JWT_SECRET=your_secret_jwt_key
-CLIENT_ORIGIN=https://enchanting-stardust-faddd9.netlify.app,http://localhost:5173
+CLIENT_ORIGIN=https://catprep-tracker.netlify.app,http://localhost:5173
 ```
 
 ---

@@ -13,4 +13,4 @@ services:
       - key: JWT_SECRET
         sync: false
       - key: CLIENT_ORIGIN
-        value: https://enchanting-stardust-faddd9.netlify.app
+        value: https://catprep-tracker.netlify.app
