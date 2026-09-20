@@ -267,32 +267,40 @@ export default function Dashboard() {
           )}
 
           {/* TODAY'S MISSION */}
-          {activeTab === 'mission' && (
-            <MissionSection
-              title="Today's Mission"
-              icon="🎯"
-              items={state.mission}
-              xpNote="+20 XP per task"
-              xpReset="resets daily"
-              onToggle={(i) => withRefresh(() => api.toggleMission(token, i))}
-              onAdd={(text) =>
-                withRefresh(() =>
-                  api.bulkSave(token, {
-                    ...state,
-                    mission: [...state.mission, { t: text, done: false }],
-                  })
-                )
-              }
-              onDelete={(i) =>
-                withRefresh(() =>
-                  api.bulkSave(token, {
-                    ...state,
-                    mission: state.mission.filter((_, idx) => idx !== i),
-                  })
-                )
-              }
-            />
-          )}
+          {activeTab === 'mission' && (() => {
+            // Get today's key: 0=Sun → 'sun', 1=Mon → 'mon', etc.
+            const dayMap = ['sun','mon','tue','wed','thu','fri','sat'];
+            const todayKey = dayMap[new Date().getDay()];
+            const scheduledItems = state.weeklySchedule?.[todayKey] || [];
+            return (
+              <MissionSection
+                title="Today's Mission"
+                icon="🎯"
+                items={state.mission}
+                xpNote="+20 XP per task"
+                xpReset="resets daily"
+                scheduledItems={scheduledItems}
+                onToggleScheduled={(i) => withRefresh(() => api.toggleScheduleTask(token, todayKey, i))}
+                onToggle={(i) => withRefresh(() => api.toggleMission(token, i))}
+                onAdd={(text) =>
+                  withRefresh(() =>
+                    api.bulkSave(token, {
+                      ...state,
+                      mission: [...state.mission, { t: text, done: false }],
+                    })
+                  )
+                }
+                onDelete={(i) =>
+                  withRefresh(() =>
+                    api.bulkSave(token, {
+                      ...state,
+                      mission: state.mission.filter((_, idx) => idx !== i),
+                    })
+                  )
+                }
+              />
+            );
+          })()}
 
           {/* WEEKLY SCHEDULE (day-by-day) */}
           {activeTab === 'weekly' && (

@@ -16,6 +16,45 @@ function todayKey() {
   return map[idx];
 }
 
+// Returns Monday of the current week
+function weekMonday() {
+  const d = new Date();
+  const day = d.getDay(); // 0=Sun
+  const diff = day === 0 ? -6 : 1 - day; // shift to Mon
+  d.setDate(d.getDate() + diff);
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
+// Format a Date as "15 Sep 2026"
+function fmt(d) {
+  return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+
+// Returns the full date for a given day key within the current week
+function dateForDayKey(key) {
+  const keyIdx = ['mon','tue','wed','thu','fri','sat','sun'].indexOf(key);
+  if (keyIdx === -1) return null;
+  const mon = weekMonday();
+  const d = new Date(mon);
+  d.setDate(d.getDate() + keyIdx);
+  return d;
+}
+
+function weekRangeLabel() {
+  const mon = weekMonday();
+  const sun = new Date(mon);
+  sun.setDate(sun.getDate() + 6);
+  return `${fmt(mon)} – ${fmt(sun)}`;
+}
+
+// Format date as "Saturday, 20 Sep 2026"
+function formatFullDate(d) {
+  return d.toLocaleDateString('en-IN', {
+    weekday: 'long', day: '2-digit', month: 'short', year: 'numeric'
+  });
+}
+
 export default function WeeklyScheduleSection({ schedule, onToggle, onAdd, onDelete }) {
   const [activeDay, setActiveDay] = useState(todayKey);
   const [newTask, setNewTask] = useState('');
@@ -47,7 +86,10 @@ export default function WeeklyScheduleSection({ schedule, onToggle, onAdd, onDel
       {/* Week summary bar */}
       <div className="card week-summary-card">
         <div className="card-head">
-          <div className="card-title">📅 Weekly Schedule</div>
+          <div>
+            <div className="card-title">📅 Weekly Schedule</div>
+            <div className="mission-date">{weekRangeLabel()}</div>
+          </div>
           <span className="card-badge">{totalDone}/{totalTasks} this week</span>
         </div>
 
@@ -77,11 +119,17 @@ export default function WeeklyScheduleSection({ schedule, onToggle, onAdd, onDel
       {/* Active day panel */}
       <div className="card day-panel">
         <div className="card-head">
-          <div className="card-title">
-            {activeDayData?.label}
-            {activeDayData?.key === todayKey() && (
-              <span className="today-chip">Today</span>
-            )}
+          <div>
+            <div className="card-title">
+              {activeDayData?.label}
+              {activeDayData?.key === todayKey() && (
+                <span className="today-chip">Today</span>
+              )}
+            </div>
+            {(() => {
+              const d = dateForDayKey(activeDay);
+              return d ? <div className="mission-date">{formatFullDate(d)}</div> : null;
+            })()}
           </div>
           <span className="card-badge">{done}/{items.length}</span>
         </div>

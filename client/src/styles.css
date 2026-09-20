@@ -429,6 +429,35 @@ a:hover { text-decoration: underline; }
   color: var(--gold); font-size: 11px; font-weight: 600;
 }
 
+/* ─── Date subtitle under card titles ─── */
+.mission-date {
+  font-size: 11.5px;
+  color: var(--ink-dim);
+  margin-top: 2px;
+  letter-spacing: 0.02em;
+}
+
+/* ─── Scheduled tasks section inside Today's Mission ─── */
+.sched-section {
+  margin-bottom: 10px;
+}
+.sched-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--ink-faint);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.sched-task {
+  opacity: 0.85;
+  border-left: 2px solid var(--violet-deep) !important;
+  padding-left: 10px;
+}
+.sched-task.done {
+  opacity: 0.5;
+}
+
 /* ═══════════════════════════════════════════════ TARGETS */
 .target-list { display: flex; flex-direction: column; gap: 18px; }
 .target-header {
