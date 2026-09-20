@@ -306,9 +306,13 @@ export default function Dashboard() {
           {activeTab === 'weekly' && (
             <WeeklyScheduleSection
               schedule={state.weeklySchedule}
-              onToggle={(day, i) => withRefresh(() => api.toggleScheduleTask(token, day, i))}
-              onAdd={(day, text) => withRefresh(() => api.addScheduleTask(token, day, text))}
-              onDelete={(day, i) => withRefresh(() => api.deleteScheduleTask(token, day, i))}
+              nextWeekSchedule={state.nextWeekSchedule}
+              onToggle={(day, i)  => withRefresh(() => api.toggleScheduleTask(token, day, i))}
+              onAdd={(day, text)  => withRefresh(() => api.addScheduleTask(token, day, text))}
+              onDelete={(day, i)  => withRefresh(() => api.deleteScheduleTask(token, day, i))}
+              onToggleNext={(day, i)  => withRefresh(() => api.toggleNextWeekTask(token, day, i))}
+              onAddNext={(day, text)  => withRefresh(() => api.addNextWeekTask(token, day, text))}
+              onDeleteNext={(day, i)  => withRefresh(() => api.deleteNextWeekTask(token, day, i))}
             />
           )}
 

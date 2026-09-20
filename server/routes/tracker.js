@@ -56,6 +56,23 @@ function applyResets(state) {
   const w = weekStart();
   if (state.lastWeeklyMissionDate !== w) {
     state.weeklyMission.forEach((m) => (m.done = false));
+    // Roll nextWeekSchedule → weeklySchedule on new week
+    const nws = state.nextWeekSchedule;
+    const hasNext = nws && DAYS.some(d => (nws[d] || []).length > 0);
+    if (hasNext) {
+      for (const d of DAYS) {
+        state.weeklySchedule[d] = (nws[d] || []).map(item => ({ t: item.t, done: false }));
+      }
+      for (const d of DAYS) state.nextWeekSchedule[d] = [];
+      state.markModified('weeklySchedule');
+      state.markModified('nextWeekSchedule');
+    } else {
+      // Reset done flags on current week schedule
+      for (const d of DAYS) {
+        (state.weeklySchedule[d] || []).forEach(m => (m.done = false));
+      }
+      state.markModified('weeklySchedule');
+    }
     state.lastWeeklyMissionDate = w;
     changed = true;
   }
@@ -100,15 +117,17 @@ function computeAchievements(state, days) {
 
 const DAYS = ['mon','tue','wed','thu','fri','sat','sun'];
 
+function serializeSchedule(ws) {
+  const out = {};
+  for (const d of DAYS) {
+    out[d] = (ws?.[d] || []).map(item => ({ t: item.t, done: item.done }));
+  }
+  return out;
+}
+
 function serialize(state) {
   const days = daysLeft(state.catDate);
   const achBaseline = Object.fromEntries(state.achBaseline || []);
-  // Convert weeklySchedule subdocument to plain object
-  const ws = state.weeklySchedule || {};
-  const weeklySchedule = {};
-  for (const d of DAYS) {
-    weeklySchedule[d] = (ws[d] || []).map(item => ({ t: item.t, done: item.done }));
-  }
   return {
     catDate: state.catDate,
     days,
@@ -117,7 +136,8 @@ function serialize(state) {
     xp: state.xp,
     mission: state.mission,
     weeklyMission: state.weeklyMission,
-    weeklySchedule,
+    weeklySchedule:     serializeSchedule(state.weeklySchedule),
+    nextWeekSchedule:   serializeSchedule(state.nextWeekSchedule),
     targets: state.targets.map((x) => ({ ...x.toObject(), status: targetStatus(x, days) })),
     mocks: state.mocks,
     learningLog: state.learningLog,
@@ -317,10 +337,48 @@ router.delete('/weekly-schedule/:day/:index', async (req, res) => {
   res.json(serialize(state));
 });
 
+// ── Next-week schedule routes ────────────────────────────────────────────────
+router.post('/next-week-schedule/:day', async (req, res) => {
+  const { day } = req.params;
+  if (!DAYS.includes(day)) return res.status(400).json({ error: 'Invalid day' });
+  const { text } = req.body;
+  if (!text || !text.trim()) return res.status(400).json({ error: 'text is required' });
+  const state = await getOrCreate(req.userId);
+  state.nextWeekSchedule[day].push({ t: text.trim(), done: false });
+  state.markModified('nextWeekSchedule');
+  await state.save();
+  res.json(serialize(state));
+});
+
+router.patch('/next-week-schedule/:day/:index', async (req, res) => {
+  const { day } = req.params;
+  if (!DAYS.includes(day)) return res.status(400).json({ error: 'Invalid day' });
+  const state = await getOrCreate(req.userId);
+  const idx = Number(req.params.index);
+  const item = state.nextWeekSchedule?.[day]?.[idx];
+  if (!item) return res.status(404).json({ error: 'Task not found' });
+  item.done = !item.done;
+  state.markModified('nextWeekSchedule');
+  await state.save();
+  res.json(serialize(state));
+});
+
+router.delete('/next-week-schedule/:day/:index', async (req, res) => {
+  const { day } = req.params;
+  if (!DAYS.includes(day)) return res.status(400).json({ error: 'Invalid day' });
+  const state = await getOrCreate(req.userId);
+  const idx = Number(req.params.index);
+  if (!state.nextWeekSchedule?.[day]?.[idx]) return res.status(404).json({ error: 'Task not found' });
+  state.nextWeekSchedule[day].splice(idx, 1);
+  state.markModified('nextWeekSchedule');
+  await state.save();
+  res.json(serialize(state));
+});
+
 // Bulk save from the "Edit dashboard" modal
 router.put('/bulk', async (req, res) => {
   const state = await getOrCreate(req.userId);
-  const { catDate, mission, weeklyMission, weeklySchedule, targets, mocks } = req.body;
+  const { catDate, mission, weeklyMission, weeklySchedule, nextWeekSchedule, targets, mocks } = req.body;
   if (catDate) state.catDate = catDate;
   if (Array.isArray(mission)) state.mission = mission;
   if (Array.isArray(weeklyMission)) state.weeklyMission = weeklyMission;
@@ -329,6 +387,12 @@ router.put('/bulk', async (req, res) => {
       if (Array.isArray(weeklySchedule[d])) state.weeklySchedule[d] = weeklySchedule[d];
     }
     state.markModified('weeklySchedule');
+  }
+  if (nextWeekSchedule && typeof nextWeekSchedule === 'object') {
+    for (const d of DAYS) {
+      if (Array.isArray(nextWeekSchedule[d])) state.nextWeekSchedule[d] = nextWeekSchedule[d];
+    }
+    state.markModified('nextWeekSchedule');
   }
   if (Array.isArray(targets)) state.targets = targets;
   if (Array.isArray(mocks)) state.mocks = mocks;

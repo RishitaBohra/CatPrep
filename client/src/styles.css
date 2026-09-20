@@ -1144,6 +1144,73 @@ textarea.inp { resize: vertical; min-height: 70px; }
   gap: 16px;
 }
 
+/* ─── Week switcher (This Week / Next Week) ─── */
+.week-switcher {
+  display: flex;
+  gap: 10px;
+  background: var(--bg-panel);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 6px;
+}
+.week-sw-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: calc(var(--radius-sm) - 4px);
+  border: none;
+  background: transparent;
+  color: var(--ink-dim);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+  position: relative;
+}
+.week-sw-btn:hover {
+  color: var(--ink);
+  background: var(--bg-hover);
+}
+.week-sw-btn.active {
+  background: var(--violet-soft);
+  color: var(--violet);
+  border: 1.5px solid var(--violet);
+  box-shadow: 0 0 10px var(--violet-glow);
+}
+.week-sw-icon { font-size: 16px; }
+.week-sw-badge {
+  position: absolute;
+  top: 6px;
+  right: 10px;
+  background: var(--gold);
+  color: #000;
+  font-size: 9px;
+  font-weight: 800;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ─── Next-week chip ─── */
+.next-week-chip {
+  margin-left: 8px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  background: rgba(255,184,77,0.12);
+  color: var(--gold);
+  border: 1px solid var(--gold);
+  vertical-align: middle;
+}
+
 /* ─── Week-summary card ─── */
 .week-summary-card {
   padding-bottom: 4px;

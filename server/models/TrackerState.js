@@ -70,7 +70,8 @@ const trackerStateSchema = new mongoose.Schema(
         { t: 'Finish 1 weak-area topic', done: false }
       ]
     },
-    weeklySchedule: { type: dayScheduleSchema, default: () => ({}) },
+    weeklySchedule:     { type: dayScheduleSchema, default: () => ({}) },
+    nextWeekSchedule:   { type: dayScheduleSchema, default: () => ({}) },
     targets: {
       type: [targetSchema],
       default: () => [
