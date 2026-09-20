@@ -195,6 +195,19 @@ export default function Dashboard() {
           {/* HOME */}
           {activeTab === 'home' && (
             <>
+              {/* Date banner */}
+              <div className="home-date-banner">
+                <span className="home-date-icon">🗓️</span>
+                <span className="home-date-text">
+                  {new Date().toLocaleDateString('en-IN', {
+                    weekday: 'long',
+                    day: '2-digit',
+                    month: 'long',
+                    year: 'numeric',
+                  })}
+                </span>
+              </div>
+
               <QuoteFlashcard />
 
               {/* Streak */}
