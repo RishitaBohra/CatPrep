@@ -98,9 +98,17 @@ function computeAchievements(state, days) {
   return ACHIEVEMENTS.map((a, i) => ({ ...a, unlocked: unlocked[i] }));
 }
 
+const DAYS = ['mon','tue','wed','thu','fri','sat','sun'];
+
 function serialize(state) {
   const days = daysLeft(state.catDate);
   const achBaseline = Object.fromEntries(state.achBaseline || []);
+  // Convert weeklySchedule subdocument to plain object
+  const ws = state.weeklySchedule || {};
+  const weeklySchedule = {};
+  for (const d of DAYS) {
+    weeklySchedule[d] = (ws[d] || []).map(item => ({ t: item.t, done: item.done }));
+  }
   return {
     catDate: state.catDate,
     days,
@@ -109,6 +117,7 @@ function serialize(state) {
     xp: state.xp,
     mission: state.mission,
     weeklyMission: state.weeklyMission,
+    weeklySchedule,
     targets: state.targets.map((x) => ({ ...x.toObject(), status: targetStatus(x, days) })),
     mocks: state.mocks,
     learningLog: state.learningLog,
@@ -264,13 +273,63 @@ router.delete('/learning-log/:index', async (req, res) => {
   res.json(serialize(state));
 });
 
+// ── Weekly Schedule (day-by-day) routes ─────────────────────────────────────
+// Add a task to a specific day
+router.post('/weekly-schedule/:day', async (req, res) => {
+  const { day } = req.params;
+  if (!DAYS.includes(day)) return res.status(400).json({ error: 'Invalid day' });
+  const { text } = req.body;
+  if (!text || !text.trim()) return res.status(400).json({ error: 'text is required' });
+  const state = await getOrCreate(req.userId);
+  if (!state.weeklySchedule) state.weeklySchedule = {};
+  state.weeklySchedule[day].push({ t: text.trim(), done: false });
+  state.markModified('weeklySchedule');
+  await state.save();
+  res.json(serialize(state));
+});
+
+// Toggle a task in a specific day (+/-20 XP)
+router.patch('/weekly-schedule/:day/:index', async (req, res) => {
+  const { day } = req.params;
+  if (!DAYS.includes(day)) return res.status(400).json({ error: 'Invalid day' });
+  const state = await getOrCreate(req.userId);
+  const idx = Number(req.params.index);
+  const item = (state.weeklySchedule || {})[day]?.[idx];
+  if (!item) return res.status(404).json({ error: 'Task not found' });
+  item.done = !item.done;
+  state.xp = Math.max(0, state.xp + (item.done ? 20 : -20));
+  if (item.done) updateStreak(state);
+  state.markModified('weeklySchedule');
+  await state.save();
+  res.json(serialize(state));
+});
+
+// Delete a task from a specific day
+router.delete('/weekly-schedule/:day/:index', async (req, res) => {
+  const { day } = req.params;
+  if (!DAYS.includes(day)) return res.status(400).json({ error: 'Invalid day' });
+  const state = await getOrCreate(req.userId);
+  const idx = Number(req.params.index);
+  if (!state.weeklySchedule?.[day]?.[idx]) return res.status(404).json({ error: 'Task not found' });
+  state.weeklySchedule[day].splice(idx, 1);
+  state.markModified('weeklySchedule');
+  await state.save();
+  res.json(serialize(state));
+});
+
 // Bulk save from the "Edit dashboard" modal
 router.put('/bulk', async (req, res) => {
   const state = await getOrCreate(req.userId);
-  const { catDate, mission, weeklyMission, targets, mocks } = req.body;
+  const { catDate, mission, weeklyMission, weeklySchedule, targets, mocks } = req.body;
   if (catDate) state.catDate = catDate;
   if (Array.isArray(mission)) state.mission = mission;
   if (Array.isArray(weeklyMission)) state.weeklyMission = weeklyMission;
+  if (weeklySchedule && typeof weeklySchedule === 'object') {
+    for (const d of DAYS) {
+      if (Array.isArray(weeklySchedule[d])) state.weeklySchedule[d] = weeklySchedule[d];
+    }
+    state.markModified('weeklySchedule');
+  }
   if (Array.isArray(targets)) state.targets = targets;
   if (Array.isArray(mocks)) state.mocks = mocks;
   await state.save();

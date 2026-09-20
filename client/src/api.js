@@ -38,6 +38,11 @@ export const api = {
   addLearning: (token, text) => request('/tracker/learning-log', { method: 'POST', body: { text }, token }),
   deleteLearning: (token, index) => request(`/tracker/learning-log/${index}`, { method: 'DELETE', token }),
 
+  // Weekly schedule (day-by-day)
+  addScheduleTask: (token, day, text) => request(`/tracker/weekly-schedule/${day}`, { method: 'POST', body: { text }, token }),
+  toggleScheduleTask: (token, day, index) => request(`/tracker/weekly-schedule/${day}/${index}`, { method: 'PATCH', token }),
+  deleteScheduleTask: (token, day, index) => request(`/tracker/weekly-schedule/${day}/${index}`, { method: 'DELETE', token }),
+
   bulkSave: (token, payload) => request('/tracker/bulk', { method: 'PUT', body: payload, token }),
   resetDashboard: (token) => request('/tracker/reset', { method: 'POST', token })
 };

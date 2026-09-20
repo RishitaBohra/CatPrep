@@ -30,6 +30,19 @@ const learningEntrySchema = new mongoose.Schema(
   { _id: false }
 );
 
+const dayScheduleSchema = new mongoose.Schema(
+  {
+    mon: { type: [missionItemSchema], default: () => [] },
+    tue: { type: [missionItemSchema], default: () => [] },
+    wed: { type: [missionItemSchema], default: () => [] },
+    thu: { type: [missionItemSchema], default: () => [] },
+    fri: { type: [missionItemSchema], default: () => [] },
+    sat: { type: [missionItemSchema], default: () => [] },
+    sun: { type: [missionItemSchema], default: () => [] },
+  },
+  { _id: false }
+);
+
 const trackerStateSchema = new mongoose.Schema(
   {
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, unique: true },
@@ -57,6 +70,7 @@ const trackerStateSchema = new mongoose.Schema(
         { t: 'Finish 1 weak-area topic', done: false }
       ]
     },
+    weeklySchedule: { type: dayScheduleSchema, default: () => ({}) },
     targets: {
       type: [targetSchema],
       default: () => [

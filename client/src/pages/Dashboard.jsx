@@ -8,6 +8,7 @@ import MockSection from '../components/MockSection';
 import AchievementsSection from '../components/AchievementsSection';
 import LearningLogSection from '../components/LearningLogSection';
 import CalendarSection from '../components/CalendarSection';
+import WeeklyScheduleSection from '../components/WeeklyScheduleSection';
 import SettingsModal from '../components/SettingsModal';
 
 const NAV = [
@@ -293,31 +294,13 @@ export default function Dashboard() {
             />
           )}
 
-          {/* WEEKLY MISSION */}
+          {/* WEEKLY SCHEDULE (day-by-day) */}
           {activeTab === 'weekly' && (
-            <MissionSection
-              title="This Week's Goals"
-              icon="📆"
-              items={state.weeklyMission}
-              xpNote="+50 XP per task"
-              xpReset="resets every Monday"
-              onToggle={(i) => withRefresh(() => api.toggleWeeklyMission(token, i))}
-              onAdd={(text) =>
-                withRefresh(() =>
-                  api.bulkSave(token, {
-                    ...state,
-                    weeklyMission: [...state.weeklyMission, { t: text, done: false }],
-                  })
-                )
-              }
-              onDelete={(i) =>
-                withRefresh(() =>
-                  api.bulkSave(token, {
-                    ...state,
-                    weeklyMission: state.weeklyMission.filter((_, idx) => idx !== i),
-                  })
-                )
-              }
+            <WeeklyScheduleSection
+              schedule={state.weeklySchedule}
+              onToggle={(day, i) => withRefresh(() => api.toggleScheduleTask(token, day, i))}
+              onAdd={(day, text) => withRefresh(() => api.addScheduleTask(token, day, text))}
+              onDelete={(day, i) => withRefresh(() => api.deleteScheduleTask(token, day, i))}
             />
           )}
 

@@ -1106,3 +1106,192 @@ textarea.inp { resize: vertical; min-height: 70px; }
   .cal-stat-num { font-size: 15px; }
 }
 
+/* ═══════════════════════════════════════════════
+   WEEKLY SCHEDULE SECTION
+═══════════════════════════════════════════════ */
+.weekly-schedule-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ─── Week-summary card ─── */
+.week-summary-card {
+  padding-bottom: 4px;
+}
+
+/* ─── Day-tab strip ─── */
+.day-tabs {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  margin-top: 14px;
+}
+
+.day-tab {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 4px 10px;
+  border-radius: var(--radius-xs);
+  border: 1.5px solid var(--border);
+  background: var(--bg-raised);
+  color: var(--ink-dim);
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.day-tab:hover {
+  border-color: var(--border-bright);
+  color: var(--ink);
+  background: var(--bg-hover);
+}
+.day-tab.active {
+  border-color: var(--violet);
+  background: var(--violet-soft);
+  color: var(--violet);
+  box-shadow: 0 0 12px var(--violet-glow);
+}
+.day-tab.today:not(.active) {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.day-tab-short {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+.day-tab-count {
+  font-size: 10px;
+  opacity: 0.85;
+}
+.today-dot {
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--gold);
+}
+.day-tab.active .today-dot {
+  background: var(--violet);
+}
+
+/* ─── Today chip ─── */
+.today-chip {
+  margin-left: 8px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  background: var(--gold-soft);
+  color: var(--gold);
+  border: 1px solid var(--gold);
+  vertical-align: middle;
+}
+
+/* ─── Active day panel ─── */
+.day-panel {
+  /* inherits .card */
+}
+
+/* ─── Week overview mini grid ─── */
+.week-overview-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+}
+
+.week-overview-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 4px 8px;
+  border-radius: var(--radius-xs);
+  border: 1.5px solid var(--border);
+  background: var(--bg-raised);
+  color: var(--ink-dim);
+  cursor: pointer;
+  transition: all var(--transition);
+  text-align: center;
+}
+.week-overview-card:hover {
+  border-color: var(--border-bright);
+  color: var(--ink);
+  background: var(--bg-hover);
+}
+.week-overview-card.active {
+  border-color: var(--violet);
+  background: var(--violet-soft);
+  color: var(--violet);
+}
+.week-overview-card.today:not(.active) {
+  border-color: var(--gold);
+}
+
+.week-ov-day {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+.week-ov-today-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--gold);
+}
+.week-ov-count {
+  font-size: 11px;
+  font-weight: 500;
+}
+.week-ov-bar {
+  width: 100%;
+  height: 3px;
+  background: var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-top: 2px;
+}
+.week-ov-fill {
+  height: 100%;
+  background: var(--violet);
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+.week-overview-card.today .week-ov-fill {
+  background: var(--gold);
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 600px) {
+  .day-tabs,
+  .week-overview-grid {
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+  }
+  .day-tab {
+    padding: 6px 2px 8px;
+    font-size: 10px;
+  }
+  .day-tab-short {
+    font-size: 10px;
+  }
+  .day-tab-count {
+    font-size: 9px;
+  }
+  .week-ov-day {
+    font-size: 9px;
+  }
+  .week-ov-count {
+    font-size: 9px;
+  }
+}
